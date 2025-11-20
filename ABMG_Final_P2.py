@@ -1,10 +1,13 @@
 import pandas as pd
 import streamlit as st
 
-#C:\Users\andre\OneDrive\Documents\Python Scripts> cd C:\\Users\\andre\\OneDrive\\Documents\\Py\\Answering Unimportant Qs With Data\\Andrew's Biased Movie Generator (ABMG)
 base_url = "https://image.tmdb.org/t/p/w500"
 
-lbox_all = pd.read_csv("C:\\Users\\andre\\OneDrive\\Documents\\Py\\Answering Unimportant Qs With Data\\Andrew's Biased Movie Generator (ABMG)\\Outputs\\ABMG_Cleaned_Data.csv")
+#For local execution:
+#lbox_all = pd.read_csv("C:\\Users\\andre\\OneDrive\\Documents\\Py\\Answering Unimportant Qs With Data\\Andrew's Biased Movie Generator (ABMG)\\Outputs\\ABMG_Cleaned_Data.csv")
+
+#For production:
+lbox_all = pd.read_csv("data/ABMG_Cleaned_Data.csv")
 
 genres = ["","Comedy", "Drama", "Action", "Adventure", "Science Fiction", "Crime", "Fantasy", "Family", "Romance", "Thriller",
          "History", "Animation", "Horror", "Music", "War", "Mystery","Documentary"]
