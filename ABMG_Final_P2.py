@@ -1,6 +1,4 @@
 import pandas as pd
-import requests
-import time
 import streamlit as st
 
 #C:\Users\andre\OneDrive\Documents\Python Scripts> cd C:\\Users\\andre\\OneDrive\\Documents\\Py\\Answering Unimportant Qs With Data\\Andrew's Biased Movie Generator (ABMG)
