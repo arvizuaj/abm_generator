@@ -11,7 +11,7 @@ lbox_all = pd.read_csv("data/ABMG_Cleaned_Data.csv")
 
 genres = ["","Comedy", "Drama", "Action", "Adventure", "Science Fiction", "Crime", "Fantasy", "Family", "Romance", "Thriller",
          "History", "Animation", "Horror", "Music", "War", "Mystery","Documentary"]
-decade = ["","<1980", "1980 - 1989", "1990 - 1999", "2000 - 2009", "2010 - 2019", "2020+"]
+decade = ["<1980", "1980 - 1989", "1990 - 1999", "2000 - 2009", "2010 - 2019", "2020+"]
 
 
 st.title("Andrew's Biased Movie Generator :popcorn: :movie_camera:")
@@ -31,20 +31,20 @@ input_runtime = st.slider("Select a max runtime (in minutes)", min_value=0,max_v
 
 #USER MAKES A SELECTION FOR A TIME FRAME
 st.subheader("Years")
-selected_time = st.selectbox("Select a decade of interest ",decade)
+selected_time = st.multiselect("Select decade(s) of interest ",decade)
 
 st.markdown("---")
 
 final_df = lbox_all[lbox_all["genres"].str.contains(selected_genre, case=False, na=False)]
 final_df = final_df[final_df["runtime"] < input_runtime]
-final_df = final_df[final_df["decade"] == selected_time]
+final_df = final_df[final_df["decade"].isin(selected_time)]
 
 final_df = final_df[["Name","lbox_year","Letterboxd URI", "lbox_rating", "poster_path","overview","tagline"]]
 
-if selected_time:
+
+if selected_time and len(final_df) > 2:
+
     final_sp = final_df.sample(n=3)
-
-
 
     for Name, Year, Rating, Poster, Description in zip(final_sp["Name"],final_sp["lbox_year"],final_sp["lbox_rating"],final_sp["poster_path"],final_sp["overview"]):
     
@@ -64,6 +64,33 @@ if selected_time:
                 st.write(f":writing_hand: **Description:** {Description}")
     
         st.markdown("---")
+
+elif selected_time and len(final_df) > 0:
+
+    final_sp = final_df
+
+    for Name, Year, Rating, Poster, Description in zip(final_sp["Name"],final_sp["lbox_year"],final_sp["lbox_rating"],final_sp["poster_path"],final_sp["overview"]):
+    
+        col1, col2 = st.columns([1,2])
+
+        with col1:
+            st.image(f"{base_url}{Poster}",width=100)
+
+        with col2:
+            if (Rating == '9/10' or Rating == '10/10'):
+                st.subheader(f":dvd: {Name}")
+            else:
+                st.subheader(Name)
+            st.write(f":calendar: **Release Year:** {Year}")
+            st.write(f":star: **Andrew's Rating:** {Rating}")
+            if Description:
+                st.write(f":writing_hand: **Description:** {Description}")
+
+        st.markdown("---")
+
+
+elif selected_time and len(final_df) == 0:
+    st.subheader("Andrew is uncultured and hasn't seen any movies that match your search!")
 
 if selected_time:
     st.button(label=":boom: Generate :boom:",key='random_widget',type="secondary",use_container_width=True)
