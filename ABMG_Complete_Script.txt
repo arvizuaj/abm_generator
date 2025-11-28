@@ -1,0 +1,136 @@
+import pandas as pd
+
+lbox= pd.read_csv("C:\\Users\\andre\\OneDrive\\Documents\\Py\\Answering Unimportant Qs With Data\\Andrew's Biased Movie Generator (ABMG)\\Letterboxd\\ratings.csv",encoding="latin1")
+all_movies = pd.read_csv("C:\\Users\\andre\\OneDrive\\Documents\\Py\\Answering Unimportant Qs With Data\\Andrew's Biased Movie Generator (ABMG)\\Kaggle\\TMDB_movie_dataset_v11.csv")
+
+
+lbox["Name"] = (
+    lbox["Name"]
+    .str.encode("latin1", errors="ignore")
+    .str.decode("utf-8", errors="ignore")
+)
+def four_char(x):
+    return x[:4]
+
+all_movies["release_date"] = all_movies["release_date"].astype(str)
+all_movies["release_year"] = all_movies["release_date"].apply(four_char)
+
+all_movies["title_year_key"] = all_movies["title"] + "-" + all_movies["release_year"]
+all_movies = all_movies.sort_values(by='popularity', ascending=False)
+all_movies = all_movies.drop_duplicates(subset=['title_year_key'], keep='first')
+lbox["Rating"] = lbox["Rating"] * 2
+lbox["Rating"] = lbox["Rating"].astype(int)
+lbox["Rating"] = lbox["Rating"].astype(str) + "/10"
+
+lbox["Year"] = lbox["Year"].astype(str)
+lbox["Name"] = lbox["Name"].astype(str)
+lbox["title_year_key"] = lbox["Name"].astype(str) + "-" + lbox["Year"].astype(str)
+
+def decade(year):
+    if year < 1980:
+        return "<= 1980"
+    elif ((year >= 1980) & (year <= 1989)):
+        return '1980 - 1989'
+    elif ((year >= 1990) & (year <= 1999)):
+        return '1990 - 1999'
+    elif ((year >= 2000) & (year <= 2009)):
+        return '2000 - 2009'
+    elif ((year >= 2010) & (year <= 2019)):
+        return '2010 - 2019'
+    else:
+        return '2020+'
+    
+lbox_all = lbox.merge(all_movies,left_on=lbox["title_year_key"],right_on=all_movies["title_year_key"],how="left")
+lbox_all = lbox_all.drop(["key_0","Date","original_title","production_countries","adult", "backdrop_path","homepage", "imdb_id","vote_average","title_year_key_y"],axis=1)
+lbox_all = lbox_all.rename(columns={"Rating": 'lbox_rating', 'Year': 'lbox_year','title_year_key_x': 'title_year_key'})
+lbox_all["lbox_year"] = lbox_all["lbox_year"].astype(int)
+lbox_all["decade"] = lbox_all["lbox_year"].apply(decade)
+
+base_url = "https://image.tmdb.org/t/p/w500"
+
+
+genres = ["","Comedy", "Drama", "Action", "Adventure", "Science Fiction", "Crime", "Fantasy", "Family", "Romance", "Thriller",
+         "History", "Animation", "Horror", "Music", "War", "Mystery","Documentary"]
+decade = ["<1980", "1980 - 1989", "1990 - 1999", "2000 - 2009", "2010 - 2019", "2020+"]
+
+
+st.title("Andrew's Biased Movie Generator :popcorn: :movie_camera:")
+#st.image
+st.markdown("Make selections below to generate a random movie from Andrew's watched films")
+
+st.image("https://townsquare.media/site/442/files/2025/10/attachment-struzan-posters-1.jpeg?w=780&q=75",use_container_width=True)
+
+
+#USER MAKES A SELECTION FOR A GENRE
+st.subheader("Genre")
+selected_genre = st.selectbox("Select a genre of interest",genres)
+
+#USER MAKES A SELECTION FOR A MAX RUNTIME
+st.subheader("Runtime")
+input_runtime = st.slider("Select a max runtime (in minutes)", min_value=0,max_value=300,value=120,step=10)
+
+#USER MAKES A SELECTION FOR A TIME FRAME
+st.subheader("Years")
+selected_time = st.multiselect("Select decade(s) of interest ",decade)
+
+st.markdown("---")
+
+final_df = lbox_all[lbox_all["genres"].str.contains(selected_genre, case=False, na=False)]
+final_df = final_df[final_df["runtime"] < input_runtime]
+final_df = final_df[final_df["decade"].isin(selected_time)]
+
+final_df = final_df[["Name","lbox_year","Letterboxd URI", "lbox_rating", "poster_path","overview","tagline"]]
+
+
+if selected_time and len(final_df) > 2:
+
+    final_sp = final_df.sample(n=3)
+
+    for Name, Year, Rating, Poster, Description in zip(final_sp["Name"],final_sp["lbox_year"],final_sp["lbox_rating"],final_sp["poster_path"],final_sp["overview"]):
+    
+        col1, col2 = st.columns([1,2])
+
+        with col1:
+            st.image(f"{base_url}{Poster}",width=100)
+
+        with col2:
+            if (Rating == '9/10' or Rating == '10/10'):
+                st.subheader(f":dvd: {Name}")
+            else:
+                st.subheader(Name)
+            st.write(f":calendar: **Release Year:** {Year}")
+            st.write(f":star: **Andrew's Rating:** {Rating}")
+            if Description:
+                st.write(f":writing_hand: **Description:** {Description}")
+    
+        st.markdown("---")
+
+elif selected_time and len(final_df) > 0:
+
+    final_sp = final_df
+
+    for Name, Year, Rating, Poster, Description in zip(final_sp["Name"],final_sp["lbox_year"],final_sp["lbox_rating"],final_sp["poster_path"],final_sp["overview"]):
+    
+        col1, col2 = st.columns([1,2])
+
+        with col1:
+            st.image(f"{base_url}{Poster}",width=100)
+
+        with col2:
+            if (Rating == '9/10' or Rating == '10/10'):
+                st.subheader(f":dvd: {Name}")
+            else:
+                st.subheader(Name)
+            st.write(f":calendar: **Release Year:** {Year}")
+            st.write(f":star: **Andrew's Rating:** {Rating}")
+            if Description:
+                st.write(f":writing_hand: **Description:** {Description}")
+
+        st.markdown("---")
+
+
+elif selected_time and len(final_df) == 0:
+    st.subheader("Andrew is uncultured and hasn't seen any movies that match your search!")
+
+if selected_time:
+    st.button(label=":boom: Generate :boom:",key='random_widget',type="secondary",use_container_width=True)
