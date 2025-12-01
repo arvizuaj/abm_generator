@@ -27,7 +27,7 @@ selected_genre = st.selectbox("Select a genre of interest",genres)
 
 #USER MAKES A SELECTION FOR A MAX RUNTIME
 st.subheader("Runtime")
-input_runtime = st.slider("Select a runtime range (in minutes) of interest", min_value=0,max_value=300,value=(80,150),step=10)
+input_runtime = st.slider("Select a runtime range (in minutes) of interest", min_value=0,max_value=300,value=(0,150),step=10)
 min_runtime, max_runtime = input_runtime
 
 #USER MAKES A SELECTION FOR A TIME FRAME
