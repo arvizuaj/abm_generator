@@ -27,17 +27,24 @@ selected_genre = st.selectbox("Select a genre of interest",genres)
 
 #USER MAKES A SELECTION FOR A MAX RUNTIME
 st.subheader("Runtime")
-input_runtime = st.slider("Select a max runtime (in minutes)", min_value=0,max_value=300,value=120,step=10)
+input_runtime = st.slider("Select a max runtime (in minutes)", min_value=0,max_value=300,value=(80,150),step=10)
+min_runtime, max_runtime = input_runtime
 
 #USER MAKES A SELECTION FOR A TIME FRAME
 st.subheader("Years")
 selected_time = st.multiselect("Select decade(s) of interest ",decade)
 
+#USER MAKES A SELECTION FOR Rating
+st.subheader("Rating")
+input_rating = st.slider("Select rating(s) of interest", min_value=0,max_value=10,value=(0,10),step=1)
+min_rating, max_rating = input_rating
+
 st.markdown("---")
 
 final_df = lbox_all[lbox_all["genres"].str.contains(selected_genre, case=False, na=False)]
-final_df = final_df[final_df["runtime"] < input_runtime]
+final_df = final_df[(final_df["runtime"] >= min_runtime) & (final_df["runtime"] <= max_runtime)]
 final_df = final_df[final_df["decade"].isin(selected_time)]
+final_df = final_df[(final_df["runtime"] >= min_rating) & (final_df["runtime"] <= max_rating)]
 
 final_df = final_df[["Name","lbox_year","Letterboxd URI", "lbox_rating", "poster_path","overview","tagline"]]
 
