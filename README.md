@@ -1,6 +1,6 @@
 #ABMG (Andrew's Biased Movie Generator)
 
-#abmgenerator.streamlit.app
+#Visit application at: abmgenerator.streamlit.app
 
 #Purpose
 This project contains a movie randomizer or generator that will produce three random movies based off a user's inputs of genre(s), runtime, and decade(s) of interest. However the inventory of movies is only films that I have seen
