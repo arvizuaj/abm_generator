@@ -10,4 +10,4 @@ and logged on my Letterboxd account.
 This project contains two data sources - 1) TMDB data and 2) Letterboxd application data
 
 #Py File
-The program contains general data wrangling and transformation statements to prep and join the data sources. After the data sources were joined and enriched, an applicaiton is developed and hosted in streamlit
+The program contains general data wrangling and transformation statements to prep and join the data sources. After the data sources were joined and enriched, an application is developed and hosted in streamlit
